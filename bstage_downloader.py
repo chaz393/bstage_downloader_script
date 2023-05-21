@@ -10,22 +10,25 @@ def download_photo(response):
 
     post_id = str(response.text).split("\"post\":{\"id\":\"")[1].split("\"")[0]
     author = str(response.text).split("\"nickname\":\"")[1].split("\"")[0]
+    post_text = str(response.text).split("\"body\":\"")[1].split("\"")[0]
 
     print(post_id)
     print(author)
+    print(post_text)
 
+    output_folder = f"downloads/{author}/{post_id}" \
+        .format(author=author, post_id=post_id)
+    os.makedirs(output_folder, exist_ok=True)
+
+    created_embed = False
     image_urls = str(response.content).split("\"images\":[")[1].split("]")[0]
     for image_url in image_urls.split(","):
         image_url = image_url.split("\"")[1]
         media_id = image_url.split("/")[-2]
-        
+        full_path = output_folder + f"/{media_id}.jpeg".format(media_id=media_id)
+
         print(image_url)
         print(media_id)
-        
-        output_folder = f"downloads/{author}/{post_id}" \
-            .format(author=author, post_id=post_id)
-        os.makedirs(output_folder, exist_ok=True)
-        full_path = output_folder + f"/{media_id}.jpeg".format(media_id=media_id)
         print(full_path)
 
         image_response = requests.get(image_url)
@@ -66,6 +69,8 @@ if __name__ == '__main__':
         if "\"video\":{\"id\"" in str(post_response.content):
             print("downloading video")
             download_video(post_response)
-        else:
+        elif "\"images\":[" in str(post_response.content):
             print("downloading photo")
             download_photo(post_response)
+        else:
+            print("text post, skipping")
