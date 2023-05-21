@@ -7,6 +7,7 @@ or to download every post:
 python download_all_bstage_posts.py
 
 For the discord bot:
+
 You must have yt-dlp and ffmpeg installed on the system
 
 And also pip install discord.py requests
